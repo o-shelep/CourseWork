@@ -1,5 +1,6 @@
 package com.example.st_mission.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -92,6 +93,7 @@ public class TaskEntity {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "created_by_id", nullable = false)
+    @JsonBackReference
     private UserEntity createdBy;
 
     @Column(nullable = false)
@@ -103,6 +105,7 @@ public class TaskEntity {
     private LocalDateTime deadline;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private List<SubmissionEntity> submissions = new ArrayList<>();
 
     @PrePersist

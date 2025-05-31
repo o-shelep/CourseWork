@@ -10,20 +10,22 @@ import com.example.st_mission.repo.SubmissionRepository;
 import com.example.st_mission.repo.TaskRepository;
 import com.example.st_mission.repo.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class SubmissionService {
-
+    private final UserProgressService userProgressService;
     private final SubmissionRepository submissionRepository;
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
-    public SubmissionService(SubmissionRepository submissionRepository,
+    public SubmissionService(UserProgressService userProgressService, SubmissionRepository submissionRepository,
                              TaskRepository taskRepository,
                              UserRepository userRepository) {
+        this.userProgressService = userProgressService;
         this.submissionRepository = submissionRepository;
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
@@ -66,7 +68,19 @@ public class SubmissionService {
         submission.setGrade(grade);
         submission.setStatus(SubmissionEntity.Status.GRADED);
 
+        recalculateUserPoints(submission.getUser());
+        userProgressService.updateUserProgress(submission.getUser());
+
         return SubmissionMapper.toDTO(submission);
     }
+
+    private void recalculateUserPoints(UserEntity user) {
+        List<SubmissionEntity> gradedSubmissions = submissionRepository.findByUserAndStatus(user, SubmissionEntity.Status.GRADED);
+        int totalPoints = gradedSubmissions.stream()
+                .mapToInt(SubmissionEntity::getGrade)
+                .sum();
+        user.setPoints(totalPoints);
+    }
+
 }
 

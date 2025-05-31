@@ -1,6 +1,7 @@
 package com.example.st_mission.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -46,7 +47,9 @@ public class UserEntity {
     @CollectionTable(name = "user_achievements", joinColumns = @JoinColumn(name = "user_id"))
     private List<String> achievements;
 
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<SubmissionEntity> submissions;
 
     public Long getId() {
@@ -112,6 +115,7 @@ public class UserEntity {
     public void setAchievements(List<String> achievements) {
         this.achievements = achievements;
     }
+
 
     public List<SubmissionEntity> getSubmissions() {
         return submissions;

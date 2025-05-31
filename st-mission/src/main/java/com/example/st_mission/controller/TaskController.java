@@ -19,7 +19,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
-@PreAuthorize("hasRole('TEACHER')")
 public class TaskController {
 
     private final TaskService taskService;
@@ -30,6 +29,7 @@ public class TaskController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<TaskDTO> createTask(@RequestBody @Valid TaskCreateDTO dto,
                                               @AuthenticationPrincipal UserDetailsImpl teacher) {
         TaskDTO created = taskService.createTask(dto, teacher.getId());
@@ -37,12 +37,19 @@ public class TaskController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<List<TaskDTO>> getAllMyTasks(@AuthenticationPrincipal UserDetailsImpl teacher) {
         return ResponseEntity.ok(taskService.getAllTasksCreatedBy(teacher.getId()));
     }
 
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<List<TaskDTO>> getAllTasks() {
+        return ResponseEntity.ok(taskService.getAllTasks());
+    }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<TaskDTO> getTaskById(@PathVariable long id,
                                                @AuthenticationPrincipal UserDetailsImpl teacher) throws AccessDeniedException {
         return ResponseEntity.ok(taskService.getTaskByIdAndTeacher(id, teacher.getId()));
@@ -50,6 +57,7 @@ public class TaskController {
 
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<TaskDTO> updateTask(@PathVariable long id,
                                               @RequestBody TaskCreateDTO updatedTask,
                                               @AuthenticationPrincipal UserDetailsImpl teacher) throws AccessDeniedException {
@@ -62,6 +70,7 @@ public class TaskController {
 
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<Void> deleteTask(@PathVariable long id,
                                            @AuthenticationPrincipal UserDetailsImpl teacher) throws AccessDeniedException {
         taskService.deleteTaskByTeacher(id, teacher.getId());

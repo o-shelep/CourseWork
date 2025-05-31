@@ -51,7 +51,7 @@ public class SubmissionController {
     @PatchMapping("/{submissionId}/grade")
     @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<SubmissionDTO> gradeSubmission(@PathVariable Long submissionId,
-                                                            @RequestParam @Min(0) int grade) {
+                                                         @RequestParam @Min(0) int grade) {
         SubmissionDTO graded = submissionService.gradeSubmission(submissionId, grade);
         return ResponseEntity.ok(graded);
     }
