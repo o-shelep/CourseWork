@@ -57,7 +57,7 @@ public class TaskController {
 
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasRole('TEACHER') or hasRole('ADMIN')")
     public ResponseEntity<TaskDTO> updateTask(@PathVariable long id,
                                               @RequestBody TaskCreateDTO updatedTask,
                                               @AuthenticationPrincipal UserDetailsImpl teacher) throws AccessDeniedException {
@@ -70,7 +70,7 @@ public class TaskController {
 
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasRole('TEACHER') or hasRole('ADMIN')")
     public ResponseEntity<Void> deleteTask(@PathVariable long id,
                                            @AuthenticationPrincipal UserDetailsImpl teacher) throws AccessDeniedException {
         taskService.deleteTaskByTeacher(id, teacher.getId());

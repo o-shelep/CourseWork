@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-//@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/admin/users")
 public class AdminUserController {
 
@@ -25,6 +24,7 @@ public class AdminUserController {
         this.userService = userService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
@@ -35,18 +35,21 @@ public class AdminUserController {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable long id, @RequestBody UserUpdateDTO userUpdateDTO) {
         UserDTO user = userService.updateUser(id, userUpdateDTO);
         return ResponseEntity.ok(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<MessageResponse> deleteUser(@PathVariable long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok(new MessageResponse("Delete user with id " + id + " successful"));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/role")
     public ResponseEntity<UserDTO> changeRole(@PathVariable long id, @RequestBody ChangeRoleDTO dto) {
         UserDTO user = userService.changeUserRole(id, dto.role());
